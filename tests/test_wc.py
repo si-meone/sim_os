@@ -5,7 +5,9 @@ from wc import wc
 
 class TestWC(unittest.TestCase):
     def test_wc(self):
-        self.assertEquals("1", str(wc('t')))
+        text = """a bb2\t ccc_3
+	dddd@@@    eeeee***"""
+        self.assertEquals(5, wc(text))
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
