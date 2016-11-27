@@ -4,6 +4,8 @@ import sys
 import logging
 from collections import Counter
 import string
+import argparse
+
 
 WORD = '\w+'
 SYMBOLS = string.punctuation
@@ -34,19 +36,25 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=level)
     logging.debug('Started DEBUG')
     logging.debug('args {}'.format(sys.argv))
-    
-    arg1 = ''
-    if len(sys.argv) == 2: 
-        arg1 = sys.argv[1]
-        logging.debug('opening file for word count {}...'.format(arg1,))
-    	print word_count(open_file(arg1))
-    elif len(sys.argv) == 3 and sys.argv[1] == '-m': 
-        arg2 = sys.argv[2]
-        logging.debug('opening file for char count {}...'.format(arg2,))
-        print char_count(open_file(arg2))
-    elif len(sys.argv) == 3 and sys.argv[1] == '-l': 
-        arg2 = sys.argv[2]
-        logging.debug('opening file for char count {}...'.format(arg2,))
-        print line_count(arg2)
+   
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('file_name', metavar='F', type=str,
+                    help='File name for counting')
+    parser.add_argument('-l', dest='line_count',  action='store_true', help='lines in file')
+    parser.add_argument('-m', dest='char_count',  action='store_true', help='words in file')
+
+    args = parser.parse_args()
+    print args
+ 
+    if args.char_count: 
+        logging.debug('opening file for char count {}...'.format(args.char_count))
+        print char_count(open_file(args.file_name))
+    elif args.line_count: 
+        logging.debug('opening file for line count {}...'.format(args.line_count))
+        print line_count(args.file_name)
+    elif args.file_name: 
+        logging.debug('opening file for word count {}...'.format(args.file_name))
+    	print word_count(open_file(args.file_name))
     else:
-        print 'no file was specified or args' 
+        print 'No file specifed or params'
