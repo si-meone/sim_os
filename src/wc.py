@@ -22,7 +22,7 @@ def wc(text):
 
 if __name__ == '__main__':
     logger = logging.getLogger(__name__)
-    level = logging.DEBUG
+    level = logging.INFO
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=level)
     logging.debug('Started DEBUG')
     
