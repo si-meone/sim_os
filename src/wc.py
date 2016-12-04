@@ -39,7 +39,7 @@ def word_count(f):
 
 if __name__ == '__main__':
     logger = logging.getLogger(__name__)
-    level = logging.DEBUG
+    level = logging.INFO
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=level)
     logging.debug('Started DEBUG')
     logging.debug('args {}'.format(sys.argv))
@@ -54,11 +54,11 @@ if __name__ == '__main__':
     parser.add_argument('-w', dest='word_count',  action='store_true', help='words in file')
 
     args = parser.parse_args()
-    print args
+    logging.debug('parser.parse_args() = {}'.format(args))
  
     if args.byte_count: 
-        logging.debug('opening file for byte count {}...'.format(args.file_name))
         print with_file(args.file_name, byte_count)
+        logging.debug('opening file for byte count {}...'.format(args.file_name))
     elif args.line_count: 
         logging.debug('opening file for line count {}...'.format(args.file_name))
         print with_file(args.file_name, line_count)
@@ -69,7 +69,9 @@ if __name__ == '__main__':
         logging.debug('opening file for word count {}...'.format(args.file_name))
         print with_file(args.file_name, word_count)
     elif args.file_name: 
-        logging.debug('opening file for word count {}...'.format(args.file_name))
-        print with_file(args.file_name, word_count)
+        logging.debug('opening file for all line, words and character count {}...'.format(args.file_name))
+        print '{} {} {}'.format(with_file(args.file_name, line_count), 
+              with_file(args.file_name, word_count),
+              with_file(args.file_name, char_count))
     else:
         print 'No file specifed or params'
