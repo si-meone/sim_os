@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import re
+import os
 import sys
 import logging
 from collections import Counter
@@ -10,19 +11,25 @@ import argparse
 WORD = '\w+'
 SYMBOLS = string.punctuation
 
-def open_file(file_name):
+def with_file(file_name, callback):
     with open(file_name, 'r') as f:
-       return f.read()
+        return callback(f)
 
-def line_count(file_name):
-    with open(file_name, 'r') as f:
-        return len(f.readlines())
+def line_count(f):
+    logging.debug('file object: [{}]'.format(f.name))
+    return len(f.readlines())
 
-def char_count(text):
-    logging.debug('original text: [{}]'.format(text))
-    return len(text)
+def char_count(f):
+    logging.debug('file object: [{}]'.format(f.name))
+    return len(f.read())
 
-def word_count(text):
+def byte_count(f):
+    f.seek(0,2)
+    byte_size = f.tell()
+    return byte_size
+
+def word_count(f):
+    text = f.read()
     pat = re.compile(WORD) 
     logging.debug('original text: [{}]'.format(text))
     clean_text = text.translate(None, string.punctuation)
@@ -39,22 +46,30 @@ if __name__ == '__main__':
    
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('file_name', metavar='F', type=str,
+    parser.add_argument('file_name', metavar='file', type=str,
                     help='File name for counting')
+    parser.add_argument('-c', dest='byte_count',  action='store_true', help='bytes in file')
     parser.add_argument('-l', dest='line_count',  action='store_true', help='lines in file')
-    parser.add_argument('-m', dest='char_count',  action='store_true', help='words in file')
+    parser.add_argument('-m', dest='char_count',  action='store_true', help='characters in file')
+    parser.add_argument('-w', dest='word_count',  action='store_true', help='words in file')
 
     args = parser.parse_args()
     print args
  
-    if args.char_count: 
-        logging.debug('opening file for char count {}...'.format(args.char_count))
-        print char_count(open_file(args.file_name))
+    if args.byte_count: 
+        logging.debug('opening file for byte count {}...'.format(args.file_name))
+        print with_file(args.file_name, byte_count)
     elif args.line_count: 
-        logging.debug('opening file for line count {}...'.format(args.line_count))
-        print line_count(args.file_name)
+        logging.debug('opening file for line count {}...'.format(args.file_name))
+        print with_file(args.file_name, line_count)
+    elif args.char_count: 
+        logging.debug('opening file for char count {}...'.format(args.file_name))
+        print with_file(args.file_name, char_count)
+    elif args.word_count: 
+        logging.debug('opening file for word count {}...'.format(args.file_name))
+        print with_file(args.file_name, word_count)
     elif args.file_name: 
         logging.debug('opening file for word count {}...'.format(args.file_name))
-    	print word_count(open_file(args.file_name))
+        print with_file(args.file_name, word_count)
     else:
         print 'No file specifed or params'
